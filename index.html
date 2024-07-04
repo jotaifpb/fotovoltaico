@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compatibilidade Fotovoltaico-Inversor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .form-group button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        .result p {
+            margin: 0 0 10px;
+        }
+        @media (min-width: 768px) {
+            .form-group {
+                display: flex;
+                align-items: center;
+            }
+            .form-group label {
+                flex: 1;
+                margin-bottom: 0;
+            }
+            .form-group input {
+                flex: 2;
+            }
+            .form-group button {
+                flex: 1;
+            }
+        }
+        @media (min-width: 1024px) {
+            body {
+                margin: 50px auto;
+                max-width: 800px;
+            }
+            .form-group {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .form-group label {
+                flex: 1;
+                margin-bottom: 0;
+                margin-right: 10px;
+            }
+            .form-group input {
+                flex: 2;
+            }
+            .form-group button {
+                flex: none;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>Verificar Compatibilidade Fotovoltaico-Inversor</h1>
+
+<h2>Especificações do Inversor</h2>
+<div class="form-group">
+    <label for="tensaoEntradaMin">Tensão de Entrada Mínima (V)</label>
+    <input type="number" id="tensaoEntradaMin" placeholder="Ex: 150" title="A tensão mínima de entrada que o inversor pode aceitar. Deve ser superior à tensão dos painéis." required>
+</div>
+
+<div class="form-group">
+    <label for="tensaoEntradaMax">Tensão de Entrada Máxima (V)</label>
+    <input type="number" id="tensaoEntradaMax" placeholder="Ex: 500" title="A tensão máxima de entrada que o inversor pode aceitar. Deve ser superior à tensão dos painéis." required>
+</div>
+
+<div class="form-group">
+    <label for="correnteEntradaMax">Corrente de Entrada Máxima (A)</label>
+    <input type="number" id="correnteEntradaMax" placeholder="Ex: 10" title="A corrente máxima de entrada que o inversor pode aceitar. Deve ser superior à corrente dos painéis." required>
+</div>
+
+<div class="form-group">
+    <label for="potenciaInversor">Potência do Inversor (W)</label>
+    <input type="number" id="potenciaInversor" placeholder="Ex: 3000" title="A potência máxima que o inversor pode entregar. Deve ser superior à potência dos painéis." required>
+</div>
+
+<div class="form-group">
+    <label for="faixaMpptMin">Faixa de MPPT Mínima (V)</label>
+    <input type="number" id="faixaMpptMin" placeholder="Ex: 200" title="A faixa mínima de tensão na qual o inversor pode operar seu rastreador de ponto de máxima potência (MPPT)." required>
+</div>
+
+<div class="form-group">
+    <label for="faixaMpptMax">Faixa de MPPT Máxima (V)</label>
+    <input type="number" id="faixaMpptMax" placeholder="Ex: 450" title="A faixa máxima de tensão na qual o inversor pode operar seu rastreador de ponto de máxima potência (MPPT)." required>
+</div>
+
+<h2>Especificações dos Painéis</h2>
+<div class="form-group">
+    <label for="numPaineis">Número de Painéis</label>
+    <input type="number" id="numPaineis" placeholder="Ex: 10" title="O número total de painéis fotovoltaicos conectados em série." required>
+</div>
+
+<div class="form-group">
+    <label for="tensaoPainel">Tensão por Painel (V)</label>
+    <input type="number" id="tensaoPainel" placeholder="Ex: 40" title="A tensão nominal gerada por cada painel fotovoltaico." required>
+</div>
+
+<div class="form-group">
+    <label for="correntePainel">Corrente por Painel (A)</label>
+    <input type="number" id="correntePainel" placeholder="Ex: 9" title="A corrente nominal gerada por cada painel fotovoltaico." required>
+</div>
+
+<div class="form-group">
+    <label for="potenciaPainel">Potência por Painel (W)</label>
+    <input type="number" id="potenciaPainel" placeholder="Ex: 300" title="A potência nominal gerada por cada painel fotovoltaico." required>
+</div>
+
+<div class="form-group">
+    <button onclick="verificarCompatibilidade()">Verificar Compatibilidade</button>
+</div>
+
+<div class="result" id="result"></div>
+
+<script>
+    function verificarCompatibilidade() {
+        // Especificações do inversor fornecidas pelo usuário
+        const tensaoEntradaMin = parseFloat(document.getElementById('tensaoEntradaMin').value);
+        const tensaoEntradaMax = parseFloat(document.getElementById('tensaoEntradaMax').value);
+        const correnteEntradaMax = parseFloat(document.getElementById('correnteEntradaMax').value);
+        const potenciaInversor = parseFloat(document.getElementById('potenciaInversor').value);
+        const faixaMpptMin = parseFloat(document.getElementById('faixaMpptMin').value);
+        const faixaMpptMax = parseFloat(document.getElementById('faixaMpptMax').value);
+
+        // Valores dos painéis fornecidos pelo usuário
+        const numPaineis = parseInt(document.getElementById('numPaineis').value);
+        const tensaoPainel = parseFloat(document.getElementById('tensaoPainel').value);
+        const correntePainel = parseFloat(document.getElementById('correntePainel').value);
+        const potenciaPainel = parseFloat(document.getElementById('potenciaPainel').value);
+
+        const tensaoTotal = numPaineis * tensaoPainel;
+        const correnteTotal = correntePainel;
+        const potenciaTotal = numPaineis * potenciaPainel;
+
+        let mensagem = "Os painéis fotovoltaicos são compatíveis com o inversor.";
+        let explicacao = "";
+
+        if (tensaoTotal < tensaoEntradaMin || tensaoTotal > tensaoEntradaMax) {
+            mensagem = "Os painéis fotovoltaicos não são compatíveis com o inversor.";
+            explicacao = `A tensão total dos painéis (${tensaoTotal} V) está fora da faixa de entrada do inversor (${tensaoEntradaMin} - ${tensaoEntradaMax} V).`;
+        } else if (correnteTotal > correnteEntradaMax) {
+            mensagem = "Os painéis fotovoltaicos não são compatíveis com o inversor.";
+            explicacao = `A corrente total dos painéis (${correnteTotal} A) excede a corrente máxima de entrada do inversor (${correnteEntradaMax} A).`;
+        } else if (potenciaTotal > potenciaInversor) {
+            mensagem = "Os painéis fotovoltaicos não são compatíveis com o inversor.";
+            explicacao = `A potência total dos painéis (${potenciaTotal} W) excede a potência do inversor (${potenciaInversor} W).`;
+        } else if (tensaoTotal < faixaMpptMin || tensaoTotal > faixaMpptMax) {
+            mensagem = "Os painéis fotovoltaicos não são compatíveis com o inversor.";
+            explicacao = `A tensão total dos painéis (${tensaoTotal} V) está fora da faixa de MPPT do inversor (${faixaMpptMin} - ${faixaMpptMax} V).`;
+        }
+
+        document.getElementById('result').innerHTML = `<p><strong>${mensagem}</strong></p><p>${explicacao}</p>`;
+    }
+</script>
+
+</body>
+</html>
